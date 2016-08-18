@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/twitter/twitter-nodes/master.svg)](https://travis-ci.org/twitter/twitter-text) [![Maven Central](https://img.shields.io/maven-central/v/com.twitter/twitter-nodes.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.twitter%22%20AND%20a%3A%22twitter-nodes%22)
+[![Build Status](https://img.shields.io/travis/twitter/nodes/master.svg)](https://travis-ci.com/twitter/nodes) [![Maven Central](https://img.shields.io/maven-central/v/com.twitter/twitter-nodes.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.twitter%22%20AND%20a%3A%22twitter-nodes%22)
 
 nodes
 ============================
