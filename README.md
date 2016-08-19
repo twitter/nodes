@@ -349,8 +349,6 @@ Success-based control flow
 // On success
 Node<C> cNode = xNode.whenSuccess(anyNode);  // gets xNode if anyNode is success, or Node.noValue();
 Node<C> cNode = xNode.orElse(yNode);  // gets xNode if xNode is a success, otherwise gets yNode
-{ ... });
-...
 ```
 
 ### Logging and Debug Messages
