@@ -5,6 +5,31 @@ Nodes
 
 Nodes is a library to implement asynchronous dependency graphs for services in Java.
 
+## Download, Build and Test
+
+You can download the code by cloning this repo:
+
+```
+git clone https://github.com/twitter/nodes
+```
+
+Go into the newly created `nodes` directory, to compile and run tests:
+
+```
+mvn compile
+mvn test
+```
+
+You may see many exception stacktrace in the output, ignore them, they are expected.
+
+To create a `.jar` file for nodes, run:
+
+```
+mvn package
+```
+
+and you shall find the `.jar` file at `dist/lib/nodes-1.0.0.jar`.
+
 ## Background
 
 When you write a service, like an RPC server based on Thrift, especially if you use [Finagle](https://twitter.github.io/finagle/), you may have some interface like:
