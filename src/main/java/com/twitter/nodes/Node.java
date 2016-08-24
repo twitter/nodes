@@ -1062,6 +1062,14 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
   }
 
   /**
+   * Split and collect with java function
+   */
+  public static <A, B> Node<List<B>> splitAndCollect(
+      Node<List<A>> list, String name, Function<A, Node<B>> func) {
+    return splitAndCollect(list, NamedFunction.create(name, func));
+  }
+
+  /**
    * Returns the value of the current node if the condition node is evaluated as true. Otherwise,
    * returns a node with a null value.
    */

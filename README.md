@@ -7,13 +7,13 @@ Nodes is a library to implement asynchronous dependency graphs for services in J
 
 ## Background
 
-When you write a service, like an RPC server based on Thrift, especially if you use [Finagle](https://twitter.github.io/finagle/), you may have some interface like:
+When you write an asynchronous service, like an RPC server, or just an non-blocking library to do some work, you may need to implement an interface like this (especially if you use [Finagle](https://twitter.github.io/finagle/)):
 
 ```java
 Future<Response> processRequest(Request req)
 ```
 
-You business logic goes inside `process()`, you may do some local computation here, call some external services, or run some code in some other threads. The logic dependencies in these code could be complicated, but Finagle provides a good paradigm for [concurrent programming with Futures](http://twitter.github.io/finagle/guide/Futures.html). The `Future` class is a good building block, but it's not exactly convenient, nor Java friendly. Usually it involves lots of nested callbacks and repeated function signatures. When it comes to waiting on multiple Futures, the code gets ugly very soon. Nodes is a Java library that aims to solve these problems, making the asynchronous code easier to read, to maintain and to test in Java.
+Your logic goes inside `processRequest()`, you may do some local computation here, call some external services, or even run some code in another threads. The logic dependencies in these code could be complicated. Finagle provides a paradigm for [concurrent programming with Futures](http://twitter.github.io/finagle/guide/Futures.html). The `Future` class is a good building block, but it's not exactly convenient, nor Java friendly. Usually it involves lots of nested callbacks and repeated function signatures. When it comes to waiting on multiple Futures, the code gets ugly very soon. Nodes is a Java library that aims to solve these problems, making the asynchronous code easier to read, to maintain and to test in Java.
 
 ## Basic Concepts
 A node is an asyncrhonous processing unit. It takes multiple asyhcrounous input nodes (dependency nodes), and produces a single output, asyncrhonously. It will only start executing when all inputs are ready. A node object is also a handle to its output: like `Future<A>` in Finagle, `Node<A>` represents an asychronously computed data of type A. Actually `Node` and `Future` are mutually convertible. The tutorials below will show you how to create nodes and assemble them into a dependency graph.
@@ -32,7 +32,7 @@ For quick examples, please see `src/main/java/com/twitter/nodes_examples`.
 
 ### Creating a Node
 
-The most common way to create a node is as follows:
+If your node has a fixed number of dependencies, the most common way to create a Node is as follows:
 
 ```java
 // A node that produces an integer as output 
@@ -55,46 +55,17 @@ public class MyNode extends Node<Integer> {
 }
 ```
 
-You write a `public` class extending `Node` with a certain type (Note that all Node's succlasses have to be `public`, we will explain this later), inside which you define enums for all your dependencies (the name convention is `D`).
+You need write a `public` class extending `Node` (or `NullableNode`, more on this later) with a certain type, inside which you define enums for all your list of dependencies (the name convention is `D`). When you instantiate the node, you will use these enums to mark out your dependencies.
 
-A dependency is by default required, which means seeing an exception in them would fail current node directly and cause it not to execute at all. Optional dependencies should be marked as `@OptionalDep`, allowing them to be omitted or to fail.
+A dependency is by default *required* (without any marking), which means throwing an exception in it would fail the depending node directly and cause them not to get executed at all. Optional dependencies are marked as `@OptionalDep`, allowing them to be omitted or to fail.
 
-You need to implement the `evaluate()` method, which will only be called when all inputs are ready. You can get values for each of the dependencies and do you computation. At the end, you are supposed to return a `Future` with desired return type. If you don't have any asynchronous processing inside, you can just wrap your output with `Future.value()`. However, if you have any asynchronous processing at all, like calling a server, or submit task to another thread, you will have a `Future` object in hand and you can just return that.
+> **Under the hood**: inside Node uses an `EnumMap` to store all dependency nodes. Even if you don't define your custom enum, there is a default one called `Node.DefaultDependencyEnum` that has 16 entries: `DEP0`, `DEP1` ... `DEP15`. If you directly use the constructor of the parent class to specify all your depdnencies, you will need to pass in a list of nodes, which will be mapped to these default enums in the order they appear.
 
-#### NullableNode
+You need to implement the `evaluate()` method, which will only be called when all dependencies are ready, and called only once. You can get values for each of the dependencies using `getDep()` and use them in your computation. At the end, you are supposed to return a `Future` object with desired return type. If you don't have any asynchronous processing inside, you can just wrap your output with `Future.value()`. However, you can also call other asynchronous services like a remote server, or submit tasks to another thread, and pass back the `Future` object you acquired from them directly.
 
-A node shouldn't return a null value, an exception would be thrown if it encounters a null output. You should try to use the control flow methods (see below) to manage the execution and make `null` value unnecessary, or utilize `Optional<A>` to represent return values that can be null. However, we also provides `NullableNode` which you can extend from, they can return `null` without causing any exception. The reason we make default `Node` class null-unfriendly is to make it easy to reason what went wrong during the execution, and not to confuse an error with a non-existent value, but overall this is a matter of style. The `NullableNode` is convenient but you should use it with care.
+#### Instantiating the Node
 
-#### ServiceNode
-
-Most of the nodes are just doing local computations. For nodes that calls any asynchronous service, be it an external Thrift RPC server, an HTTP server, or just a in-process scheduler that runs tasks in a thread pool, you can implement in `ServiceNode`. Rather than implementing `evaluate()`, you need to implement `buildRequest()` and `getService()`.
-
-The method `buildRequst()` builds the request for current service call, in the parent class it's called in `evaluate()` so all dependencies should already be ready.
-
-The method `getService()` gets a Finagle `Service` object, its interface is mostly about taking a `Request` and return a `Future<Response>`.
-
-```java
-public class NodeServiceNode extends ServiceNode<Response> {
-  private final Node<A> 
-
-  @Override
-  public Service<Request, Response> getService() {
-     // get service from somewhere
-  }
-  
-  @Override
-  public Request buildRequest() {
-    // this is called inside evaluate(), you can get all your dependencies
-    // the same way, or just get them from your own member variable.
-  }
-}
-```
-
-(more on this)
-
-### Instantiating a Node
-
-To instantiate your node:
+To instantiate your node with enum-based dependencies:
 
 ```java
 Node<Integer> resultNode = Node.build(
@@ -123,32 +94,49 @@ Node<Integer> resultNode = Node.build(
     MyNode.D.DEP3, Node.fail(new Exception()));
 ```
 
-You can always implement a raw node without these enum based dependencies, and instantiate it with a normal constructor. You can see many such examples in the "Boolean operations" section of "Node Transformations".
+#### NullableNode
+
+Normally a node shouldn't return a `null` value, an exception would be thrown if it encounters a null output. You should try to use the control flow methods (see below) to manage the execution and make `null` value unnecessary, or utilize `Optional<A>` to represent return values that can be null. However, we also provides `NullableNode` which you can extend from, they can return `null` without causing any exception. The reason we make default `Node` class null-unfriendly is to make it easy to reason what went wrong during the execution, and not to confuse an error with a non-existent value, but overall this is a matter of style. The `NullableNode` is convenient but you should use it with care.
+
+#### ServiceNode
+
+Most of the nodes are just doing local computations. For nodes that calls any asynchronous service, be it an external Thrift RPC server, an HTTP server, or just a in-process scheduler that runs tasks in a thread pool, you can extend from `ServiceNode`, which provides some convenience for dealing with services. Rather than implementing `evaluate()`, you need to implement `buildRequest()` and `getService()`.
+
+The method `buildRequst()` builds the request for current service call, in the parent class it's called in `evaluate()` so all dependencies should already be ready.
+
+The method `getService()` gets a Finagle `Service` object, with has a method `Future<Response> apply(Request req)`. You can get this object from some factory, some registry, or simply from some static variables.
 
 ```java
-Node<A> aNode = new SomeSpecialNode(inputNode1, inputNode2);
+public class NodeServiceNode extends ServiceNode<Response> {
+  @Override
+  public Service<Request, Response> getService() {
+    ...
+  }
+  
+  @Override
+  public Request buildRequest() {
+    // this is called inside evaluate(), you can get all your dependencies
+    // the same way, or just get them from your own member variable.
+  }
+}
 ```
 
-### Executing the Dependency Graph
+To specify the dependencies, you can either use the same enum-based solution described above, or directly use Node's own constructor (which takes a list of nodes). You can even implement your own constructor if it takes some special inputs more than dependending nodes.
 
-A node (or a dependency tree of nodes) doesn't get executed automatically after they are constructed. The instantiation of the node only defines the logic dependency, but nothing has executed yet. To start running, you need to call `apply()` on nodes:
+### Executing a Dependency Graph
+
+A node (which also denotes a dependency tree rooted at it) doesn't get executed automatically after they are constructed. The instantiation of the node only defines the logic dependency, but nothing has executed yet. To start running, you need to call `apply()`:
 
 ```java
 Future<A> aFuture = aNode.apply();
 ```
 
-This creates a Future of the node, which you can wait on. This will trigger a recursive execution (an `apply()` call) of all its dependencies and their dependencies. You start from the root of a tree and it eventually reaches all leaves, which are inputs. Only the nodes reachable by walking the dependency links will be executed.
+This creates a `Future` of the node, which you can wait on. This will trigger the evaluation of all its dependencies and cause their `apply()` to get called, and in turn trigger the execution recursively. You start from the root of a tree and it eventually reaches all leaves, which are inputs. Only the nodes reachable by walking the dependency links will be executed.
 
-You can just pass this `Future` object to anywhere it's needed, like inside the `processRequest()` method of your server in the example at the beginning. If you want to block on it and get its value, you can call:
+You can just pass this `Future` object to anywhere it's needed, like inside the `processRequest()` method of your server implementation in the example at the beginning. If you want to block on it and get its value, you can call:
 
 ```java
 A a = Await.result(aNode.apply(), Duration.ofSeconds(2));
-```
-
-Another way is to directly call `emit()` on node object, this is same as two steps above combined, but you can't specify a timeout value.
-
-```java
-A a = aNode.emit();
 ```
 
 ### Sinks
@@ -330,6 +318,30 @@ Node<C> nodeC = NodeUtils.mapAsPair(
     nodeA, nodeB, "mapMethodName", (a, b) -> {...})
 ```
 
+You can also convert a list of nodes (of the same type) to a node with the list type. This is handy when you need to call unknown number of async processes and handle all of their responses together.
+
+```java
+List<Node<A>> listOfNodeA = ...
+Node<List<A>> node = Node.collect(listOfNodeA);
+```
+
+Similarly, there is a Map based version:
+
+```java
+Map<A, Node<B>> nodesByKey = ...
+Node<Map<A, B>> node = Node.collect(nodesByKey);
+```
+
+You can also apply some transformation to each entry in a list under a node, and collect all results:
+
+```java
+Node<List<A>> alistNode = ...
+Node<List<B>> blistNode = Node.splitAndCollect(
+    alistNode, "functionname", a -> { ... return something Node<B> ... });
+```
+
+You can take a look at their implementation and you can also build your own fancy node transformations.
+
 ### Control Flow with Nodes
 
 You can implement if-then-else logic with Nodes. There is also syntactic sugar to represent some other common condition checks, like whether a node has finished running successfully (more on "successful nodes" later).
@@ -355,9 +367,59 @@ Node<C> cNode = xNode.orElse(yNode);  // gets xNode if xNode is a success, other
 
 ### Logging and Debug Messages
 
-Nodes provides a simple framework for collecting debug messages in the asychrounous execution of the dependency graph.
+Nodes provides a simple framework for collecting debug messages in the asychrounous execution of the dependency graph. There is a `DebugManager` class with a thread-local `DebugMessageBuilder` inside. For each execution of a graph, you can set a new `DebugMessageBuilder` and all debug messages will be collected over there.
 
-(to be finished)
+```java
+DebugManager.update(new DebugMessageBuilder(DebugLevel.DEBUG_DETAILED));
+```
+
+> Make sure you call `update()` in the same thread you would call `apply()` on this node, so the thread-local setup actually works.
+
+You can choose from multiple `DebugLevels`, When you produce the debug message, only those no higher than the set level would be collected.
+
+Anywhere in your node's `evaluate()` method or other non-static methods, you can call following member methods to append a message to the current `DebugMessageBuilder`. It supports `String.format()` style formatters. A line break will be added automatically after each call.
+
+```java
+debugSimple("current score: %d", score);
+debugDetailed("input type = %, parameters = %s", type, params);
+debugVerbose("server full response: %s", response);
+debugVerbose2("super detailed debug info: %s", stuff);
+```
+
+If you are not in the scope of a Node subclass, you can still append message by calling similar methods in DebugManager.
+
+```java
+DebugManager.debugSimple(...)
+DebugManager.debugDetailed(...)
+```
+
+All these messages will be properly prefixed with the node name and timestamp. Node itself also produces some debug messages to mark the beginning and end of its execution, storing the time spent in the node, etc.
+
+To get the debug message after the node has finish executing, just call `DebugManager.getDebugMessage()`.
+
+If you run the sample code in `src/main/java/com/twitter/nodes_examples/search/SearchExampleMain.java', you will get debug messages like:
+
+```
+[5184] NODE [hasQuery]: Start
+[5185] NODE [hasQuery]: End (52/0 ms)
+[5185] NODE [IF::hasQuery(BuildResponseNode, null)]: Start
+[5196] NODE [hasUserId]: Start
+[5196] NODE [getQuery]: Start
+[5196] NODE [getNumResults]: Start
+[5196] NODE [hasUserId]: End (2/0 ms)
+[5196] NODE [getQuery]: End (1/0 ms)
+[5197] NODE [getNumResults]: End (2/0 ms)
+[5197] NODE [IF::hasUserId(UserScoreServiceNode[?], defaultUserScore)]: Start
+[5197] NODE [SearchIndexNode]: Start
+[5206] NODE [getUserId]: Start
+[5206] NODE [getUserId]: End (1/0 ms)
+[5207] NODE [UserScoreServiceNode[?]]: Start
+[5207] NODE [UserScoreServiceNode[?]]: built service request: 777
+[5854] NODE [SearchIndexNode]: End (659/8 ms)
+...
+```
+
+The number at the beginning of each line is the last 4 digits of current time in milliseconds, so you have a sense when each step was run.
 
 ### Naming Conventions
 
