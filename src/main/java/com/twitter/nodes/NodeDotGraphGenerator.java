@@ -319,7 +319,7 @@ public final class NodeDotGraphGenerator {
         || node instanceof OrNode
         || node instanceof NotNode) {
       return  NodeType.BOOLEAN;
-    } else if (node.getClass().getSimpleName().equals("ServiceNode")) {
+    } else if (node instanceof ServiceNode) {
       return  NodeType.SERVICE;
     } else {
       return NodeType.NORMAL;

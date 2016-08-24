@@ -8,7 +8,7 @@ digraph G {
   n3 [label="BuildResponseNode\n<SearchResponse>" shape=box];
   n4 [label="IF::hasUserId(UserScoreServiceNode[?], defaultUserScore)\n<Double>" style=filled,color="#ddefef",shape=polygon,sides=4,distortion=.05];
   n5 [label="hasUserId\n<B>" style=filled,color="#efefdd",shape=polygon,sides=4,distortion=-.05];
-  n6 [label="UserScoreServiceNode[?]\n<Double>" shape=box];
+  n6 [label="UserScoreServiceNode[?]\n<Double>" style=filled,shape=box,peripheries=2];
   n7 [label="getUserId\n<B>" style=filled,color="#efefdd",shape=polygon,sides=4,distortion=-.05];
   n8 [label="defaultUserScore\n<Double>" style=filled,color="#efccef",shape=box];
   n9 [label="SearchIndexNode\n<List<Long>>" shape=box];

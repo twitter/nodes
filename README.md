@@ -448,23 +448,25 @@ You can visualize your node by generating a DOT graph text for it.
 String dot = mynode.toDotGraph();
 
 // for subgraphs
-String dot = mySubgraph.toDotGraph();
+String dot = mygraph.toDotGraph();
 
 // You can save these strings to a file to be rendered by other tools.
-FileUtils.writeStringToFile(new File("/path/to/file.dot", dot));
+Files.write(mygraph.toDotGraph().getBytes(), new File("graph.dot"));
 ```
 
-You can render the generated file using Graphviz ([download here](http://www.graphviz.org/Download_macos.php)). If you want to understand the format of the generated file, take a look at the [DOT language reference](http://www.graphviz.org/Documentation.php).
+You can render the generated file using Graphviz ([download here](http://www.graphviz.org/Download_macos.php), you may also need [X11](https://www.xquartz.org/)). If you want to understand the format of the generated file, take a look at the [DOT language reference](http://www.graphviz.org/Documentation.php). A rendered graph looks like this:
 
-In the generated diagram, the type of the node is indicated by its shape, while the optionality of dependencies are represented by the edges connecting them.
+[[https://github.com/twitter/nodes/blob/master/src/main/java/com/twitter/nodes_examples/search/graph.jpg|DOT diagram]]
+
+The type of the node is indicated by its shape, while the optionality of dependencies are represented by the edges connecting them.
 
 For nodes:
 
 * pink box: value nodes
 * green-yellow trapezoid: transform node
-* green-blue inverted trapezoid: predicate switch node (with "condition" and true/false branch)
-* white square box: normal node
+* green-blue inverted trapezoid: predicate switch node (with "condition" and true/false branch), created by `Node.ifThen()` or `Node.ifThenElse()`
 * gray double-edged box: service node
+* white square box: other normal nodes
 
 For edges (dependencies):
 
