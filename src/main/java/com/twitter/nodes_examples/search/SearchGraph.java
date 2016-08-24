@@ -149,7 +149,8 @@ public class SearchGraph extends Subgraph {
       }
 
       SearchResponse response = new SearchResponse(results, userScore);
-      return DelayedResponse.get().delay(response);
+      // no delay here as this is just local non-async computation.
+      return Future.value(response);
     }
   }
 

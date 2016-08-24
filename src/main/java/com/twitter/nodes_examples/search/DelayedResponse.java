@@ -44,6 +44,7 @@ public class DelayedResponse {
         promise.become(Future.value(value));
       } catch (InterruptedException e) {
         Thread.interrupted();
+        promise.become(Future.exception(new Exception("interrupted")));
       }
     });
     return promise;
