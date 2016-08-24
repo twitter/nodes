@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.twitter.nodes.examples.search;
+package com.twitter.nodes_examples.search;
 
 import java.util.ArrayList;
 import java.util.List;

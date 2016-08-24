@@ -53,6 +53,8 @@ Actually this is very close to how its implemented, except that the input argume
 
 ## Tutorials
 
+For quick examples, please see `src/main/java/com/twitter/nodes/examples`.
+
 ### Creating a Node
 
 The most common way to create a node is as follows:
