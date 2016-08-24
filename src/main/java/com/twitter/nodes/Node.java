@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -348,7 +349,9 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
    * This is only used to generate DOT graph.
    */
   public final Set<? extends Enum> getOptionalDependencies() {
-    Preconditions.checkArgument(!dependentNodesByName.isEmpty(), "This node has no dependency");
+    if (dependentNodesByName.isEmpty()) {
+      return Collections.emptySet();
+    }
     Enum firstEnum = dependentNodesByName.keySet().iterator().next();
     return getOptionalDependenciesForClass(firstEnum.getClass());
   }

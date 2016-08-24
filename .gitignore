@@ -21,6 +21,7 @@ GSYMS
 .project
 .settings
 _build/
+build/
 dist
 target
 .buildcache

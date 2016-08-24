@@ -94,7 +94,7 @@ public abstract class ServiceNode<Req, Resp> extends NullableNode<Resp> {
    * NOTE: Called at the evaluation time.
    */
   @VisibleForTesting
-  Service<Req, Resp> getService() {
+  protected Service<Req, Resp> getService() {
     return service;
   }
 

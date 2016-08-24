@@ -1,0 +1,40 @@
+digraph G {
+  rankdir=TB;
+  node [shape=box fontname="menlo" fontsize=11];
+  edge [fontname="menlo" fontsize=9];
+  n0 [label="IF::hasQuery(BuildResponseNode, null)\n<SearchResponse>" style=filled,color="#ddefef",shape=polygon,sides=4,distortion=.05,fontcolor=blue];
+  n1 [label="hasQuery\n<B>" style=filled,color="#efefdd",shape=polygon,sides=4,distortion=-.05];
+  n2 [label="value[SearchRequest]\n<SearchRequest>" style=filled,color="#efccef",shape=box];
+  n3 [label="BuildResponseNode\n<SearchResponse>" shape=box];
+  n4 [label="IF::hasUserId(UserScoreServiceNode[?], defaultUserScore)\n<Double>" style=filled,color="#ddefef",shape=polygon,sides=4,distortion=.05];
+  n5 [label="hasUserId\n<B>" style=filled,color="#efefdd",shape=polygon,sides=4,distortion=-.05];
+  n6 [label="UserScoreServiceNode[?]\n<Double>" shape=box];
+  n7 [label="getUserId\n<B>" style=filled,color="#efefdd",shape=polygon,sides=4,distortion=-.05];
+  n8 [label="defaultUserScore\n<Double>" style=filled,color="#efccef",shape=box];
+  n9 [label="SearchIndexNode\n<List<Long>>" shape=box];
+  n10 [label="getQuery\n<B>" style=filled,color="#efefdd",shape=polygon,sides=4,distortion=-.05];
+  n11 [label="getNumResults\n<B>" style=filled,color="#efefdd",shape=polygon,sides=4,distortion=-.05];
+  n12 [label="HydrationNode\n<Map<Long, String>>" shape=box];
+  n13 [label="newPrefix\n<String>" style=filled,color="#efccef",shape=box];
+  n14 [label="null" style=filled,color="#efccef",shape=box];
+
+  n1 -> n0 [style=solid label="condition" color="grey"];
+  n3 -> n0 [style=solid label="TRUE" color="black"];
+  n14 -> n0 [style=solid label="FALSE" color="black"];
+  n2 -> n1 [style=solid label="" color="black"];
+  n12 -> n3 [style=solid label="HYDRATION_MAP" color="black"];
+  n9 -> n3 [style=solid label="RESULT_ID_LIST" color="black"];
+  n4 -> n3 [style=solid label="USER_SCORE" color="black"];
+  n5 -> n4 [style=solid label="condition" color="grey"];
+  n6 -> n4 [style=solid label="TRUE" color="black"];
+  n8 -> n4 [style=solid label="FALSE" color="black"];
+  n2 -> n5 [style=solid label="" color="black"];
+  n7 -> n6 [style=solid label="" color="black"];
+  n2 -> n7 [style=solid label="" color="black"];
+  n11 -> n9 [style=solid label="NUM_RESULTS" color="black"];
+  n10 -> n9 [style=solid label="QUERY" color="black"];
+  n2 -> n10 [style=solid label="" color="black"];
+  n13 -> n12 [style=dashed label="PREFIX" color="black"];
+  n9 -> n12 [style=solid label="ID_LIST" color="black"];
+  n2 -> n11 [style=solid label="" color="black"];
+}
