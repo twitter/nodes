@@ -7,32 +7,30 @@ Nodes is a library to implement asynchronous dependency graphs for services in J
 
 ## Background
 
-When you write an asynchronous service, like an RPC server, or just an non-blocking library to do some work, you may need to implement an interface like this (especially if you use [Finagle](https://twitter.github.io/finagle/)):
+When you write an asynchronous service, like an RPC server, or just a non-blocking library to do some work, you may need to implement an interface like this:
 
 ```java
 Future<Response> processRequest(Request req)
 ```
 
-Your logic goes inside `processRequest()`, you may do some local computation here, call some external services, or even run some code in another threads. The logic dependencies in these code could be complicated. Finagle provides a paradigm for [concurrent programming with Futures](http://twitter.github.io/finagle/guide/Futures.html). The `Future` class is a good building block, but it's not exactly convenient, nor Java friendly. Usually it involves lots of nested callbacks and repeated function signatures. When it comes to waiting on multiple Futures, the code gets ugly very soon. Nodes is a Java library that aims to solve these problems, making the asynchronous code easier to read, to maintain and to test in Java.
+Your logic goes inside `processRequest()`, you may do some local computation here, call some external services, or even run some code in another thread. The logic dependencies in these code could be complicated. [Finagle](https://twitter.github.io/finagle/) provides a good paradigm for [concurrent programming with Futures](http://twitter.github.io/finagle/guide/Futures.html). The `Future` class is a greate building block, it decouples the execution logic and the thread scheduling, so the developer can focus on the logic dependencies rather than their actual execution. However, this library was written in Scala and isn't exactly Java friendly. It naturally involves a lot of callbacks and repeated function signatures. When it comes to waiting on multiple Futures, the code gets ugly very fast. Nodes is a Java library that aims to solve these problems, making the asynchronous code easier to read, to maintain and to test in Java.
 
 ## Basic Concepts
-A node is an asyncrhonous processing unit. It takes multiple asyhcrounous input nodes (dependency nodes), and produces a single output, asyncrhonously. It will only start executing when all inputs are ready. A node object is also a handle to its output: like `Future<A>` in Finagle, `Node<A>` represents an asychronously computed data of type A. Actually `Node` and `Future` are mutually convertible. The tutorials below will show you how to create nodes and assemble them into a dependency graph.
+A node is an asyncrhonous processing unit. It takes multiple asyhcrounous input nodes (dependencies), and produces a single output. It will only start executing when all inputs are ready. A node object is also a handle to its output. Like `Future<A>` in Finagle, `Node<A>` represents an asychronously computed data of type A. Actually `Node` and `Future` are mutually convertible. The tutorials below will show you how to create nodes and assemble them into a dependency graph.
 
-Another way to understand nodes is to consider them Asynchronous Functions, every node with input of type A, B, C and return type of X can be thought as a function:
+Another way to understand nodes is to consider them asynchronous functions, every node with input of type A, B, C and return type of X can be thought as a function with signature:
 
 ```java
 Future<X> process(Future<A> a, Future<B> b, Future<C> c)
 ```
 
-Actually this is very close to how its implemented, except that the input arguments have to be declared as dependency enums.
-
 ## Tutorials
 
-For quick examples, please see `src/main/java/com/twitter/nodes_examples`.
+For quick examples, please see [src/main/java/com/twitter/nodes_examples](src/main/java/com/twitter/nodes_examples).
 
 ### Creating a Node
 
-If your node has a fixed number of dependencies, the most common way to create a Node is as follows:
+If your node has a fixed number (more than 1) of dependencies, the most common way to create a Node is as follows:
 
 ```java
 // A node that produces an integer as output 
@@ -438,12 +436,9 @@ It's easy to write tests for nodes. Just instantiate them and test their output 
 
 ### Visualzation
 
-You can visualize your node by generating a DOT graph text for it.
+You can visualize your node by generating a [DOT](http://www.graphviz.org/Documentation.php) file.
 
 ```java
-// You can create a dummy unittest and run the code below. In each node/subgraph's unittests,
-// it's likely we have already constructed an instance of it, so you can just call toDotGraph() directly.
- 
 // for nodes
 String dot = mynode.toDotGraph();
 
@@ -454,7 +449,7 @@ String dot = mygraph.toDotGraph();
 Files.write(mygraph.toDotGraph().getBytes(), new File("graph.dot"));
 ```
 
-You can render the generated file using Graphviz ([download here](http://www.graphviz.org/Download_macos.php), you may also need [X11](https://www.xquartz.org/)). If you want to understand the format of the generated file, take a look at the [DOT language reference](http://www.graphviz.org/Documentation.php). A rendered graph looks like this:
+You can render the generated file using Graphviz ([download here](http://www.graphviz.org/Download_macos.php), you may also need [X11](https://www.xquartz.org/)). Check out the [DOT language reference](http://www.graphviz.org/Documentation.php) if you want to understand the generated file, or read [NodeDotGraphGenerator.java](src/main/java/com/twitter/nodes/NodeDotGraphGenerator.java). A rendered graph looks like this:
 
 ![DOT dependency diagram](src/main/java/com/twitter/nodes_examples/search/graph.png "Rendered Depependency Graph from example code")
 
@@ -508,6 +503,10 @@ This library depends on following Twitter libraries:
 * [Finagle](https://github.com/twitter/finagle) (finagle-core)
 
 Please see `pom.xml` for other dependencies.
+
+## Support
+
+You can join our mailing list `twitter-nodes@googlegroups.com` on [Google Groups](https://groups.google.com/forum/#!forum/twitter-nodes), you can check out the archived threads on web.
 
 ## Copyright and License
 
