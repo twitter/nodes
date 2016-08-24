@@ -5,31 +5,6 @@ Nodes
 
 Nodes is a library to implement asynchronous dependency graphs for services in Java.
 
-## Download, Build and Test
-
-You can download the code by cloning this repo:
-
-```
-git clone https://github.com/twitter/nodes
-```
-
-Go into the newly created `nodes` directory, to compile and run tests:
-
-```
-mvn compile
-mvn test
-```
-
-You may see many exception stacktrace in the output, ignore them, they are expected.
-
-To create a `.jar` file for nodes, run:
-
-```
-mvn package
-```
-
-and you shall find the `.jar` file at `dist/lib/nodes-1.0.0.jar`.
-
 ## Background
 
 When you write a service, like an RPC server based on Thrift, especially if you use [Finagle](https://twitter.github.io/finagle/), you may have some interface like:
@@ -53,7 +28,7 @@ Actually this is very close to how its implemented, except that the input argume
 
 ## Tutorials
 
-For quick examples, please see `src/main/java/com/twitter/nodes/examples`.
+For quick examples, please see `src/main/java/com/twitter/nodes_examples`.
 
 ### Creating a Node
 
@@ -437,6 +412,38 @@ For edges (dependencies):
 
 To make your graph look nice, always remember naming TransformNode (give it method-like name) and ValueNode (give it variable like name).
 
+
+## Download, Build and Test
+
+You can download the code by cloning this repo:
+
+```
+git clone https://github.com/twitter/nodes
+```
+
+Go into the newly created `nodes` directory, to compile and run tests:
+
+```
+mvn compile
+mvn test
+```
+
+You may see many exception stacktrace in the output, ignore them, they are expected.
+
+To create a `.jar` file for nodes, run:
+
+```
+mvn package
+```
+
+and you shall find the `.jar` file at `dist/lib/nodes-1.0.0.jar`.
+
+This library depends on following Twitter libraries:
+
+* [Twitter util](https://github.com/twitter/util) (util-core, util-logging)
+* [Finagle](https://github.com/twitter/finagle) (finagle-core)
+
+Please see `pom.xml` for other dependencies.
 
 ## Copyright and License
 
