@@ -61,6 +61,8 @@ A dependency is by default *required* (without any marking), which means throwin
 
 You need to implement the `evaluate()` method, which will only be called when all dependencies are ready, and called only once. You can get values for each of the dependencies using `getDep()` and use them in your computation. At the end, you are supposed to return a `Future` object with desired return type. If you don't have any asynchronous processing inside, you can just wrap your output with `Future.value()`. However, you can also call other asynchronous services like a remote server, or submit tasks to another thread, and pass back the `Future` object you acquired from them directly.
 
+There is always a simple way to create a multiple-dependency node inline with Java 8 lambda functions, with support up to 4 inputs. See [Map with Multiple Inputs](#map-multiple) for more details.
+
 #### Instantiating the Node
 
 To instantiate your node with enum-based dependencies:
@@ -259,7 +261,7 @@ For nodes with only a single input/dependency, it's cumbersome to create a whole
 
 #### map and flatMap
 
-You can map a node of type A to another type B or even the Future of B `Future<B>` using vairous mapping methods. You can provide either a `NamedFunction` or a Java 8 lambda method for the logic:
+You can convert a node of type A to type B using a map. You only need to provide a function (in the form of a name string and a Java function, or a `NamedFunction` object). You can also do a `flatMap` where your function returns a `Future<B>` rather than straight type B, so you can call other asynchronous process inside.
 
 ```java
 // To convert the node of one type to another, synchronously
@@ -285,6 +287,24 @@ Node<B> bNode = aNode.map("name", SomeClass::staticMethodOnA);
 Node<B> bNode = aNode.map("name", someObject::instanceMethodOnA);
 // same applies to .mapOnSuccess(), .flatMap(), etc
 ```
+
+#### <a name="map-multiple"></a> Map with Multiple Inputs
+Actually we also support map with multiple inputs, this can be used to implement simple multi-dependency node as well, rather than using enum-based dependency definitions:
+
+```java
+Node<X> nodeX = Node.map2(
+    "map2", nodeA, nodeB, (a, b) -> {...})
+
+Node<X> nodeX = Node.map3(
+    "map3", nodeA, nodeB, nodeC, (a, b, c) -> {...})
+
+Node<X> nodeX = Node.map4(
+    "map4", nodeA, nodeB, nodeC, nodeD, (a, b, c, d) -> {...})
+```
+
+Also there are `flatMap` versions, the function passed in should return a `Future<X>` instead.
+
+You can use these mappers/flatMappers to implement simple nodes with no optional dependencies. You can test them by just testing the normal function passed in.
 
 #### Bolean operations
 
@@ -312,8 +332,6 @@ Node<B> nodeB = ...;
 
 Node<List<A>> listNode = NodeUtils.asList(nodeA);
 Node<Pair<A, B>> pairNode = NodeUtils.asPair(nodeA, nodeB);
-Node<C> nodeC = NodeUtils.mapAsPair(
-    nodeA, nodeB, "mapMethodName", (a, b) -> {...})
 ```
 
 You can also convert a list of nodes (of the same type) to a node with the list type. This is handy when you need to call unknown number of async processes and handle all of their responses together.

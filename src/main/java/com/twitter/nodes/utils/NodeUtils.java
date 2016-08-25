@@ -67,15 +67,6 @@ public final class NodeUtils {
     return new ToNodePair<>(node1, node2);
   }
 
-  public static <S, T, P> Node<P> mapAsPair(
-      final Node<S> node1,
-      final Node<T> node2,
-      final String name,
-      final java.util.function.BiFunction<S, T, P> function) {
-    return new ToNodePair<>(node1, node2).map(
-        name, pair -> function.apply(pair.getFirst(), pair.getSecond()));
-  }
-
   public static <S, T> Pair<Node<S>, Node<T>> splitPair(Node<Pair<S, T>> pairNode) {
     return Pair.of(
         pairNode.mapOnSuccess("getFirst", Pair::getFirst),

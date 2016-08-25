@@ -482,4 +482,22 @@ public class NodeTest extends NodeTestBase {
     assertEquals(4, store.size());
     assertEquals(999, store.get(3).intValue());  // the last node should insert its value last
   }
+
+  @Test
+  public void testMapMultiple() throws Exception {
+    Node<Integer> aNode = Node.value(1);
+    Node<Integer> bNode = Node.value(2);
+    Node<Integer> cNode = Node.value(3);
+    Node<Integer> dNode = Node.value(4);
+
+    Node<Integer> sum2 = Node.map2("add", aNode, bNode, (a, b) -> a + b);
+    assertEquals(3, (int) resultFromNode(sum2));
+
+    Node<Integer> sum3 = Node.map3("add", aNode, bNode, cNode, (a, b, c) -> a + b + c);
+    assertEquals(6, (int) resultFromNode(sum3));
+
+    Node<Integer> sum4 = Node.map4("add", aNode, bNode, cNode, dNode,
+        (a, b, c, d) -> a + b + c + d);
+    assertEquals(10, (int) resultFromNode(sum4));
+  }
 }

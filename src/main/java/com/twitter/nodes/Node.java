@@ -982,6 +982,92 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
   }
 
   /**
+   * Mapping with multiple inputs
+   */
+  @FunctionalInterface
+  public interface Function2<X, A, B> {
+    X apply(A a, B b);
+  }
+
+  @FunctionalInterface
+  public interface Function3<X, A, B, C> {
+    X apply(A a, B b, C c);
+  }
+
+  @FunctionalInterface
+  public interface Function4<X, A, B, C, D> {
+    X apply(A a, B b, C c, D d);
+  }
+
+  public static <T, A, B> Node<T> map2(
+      String name,
+      final Node<A> aNode, final Node<B> bNode, Function2<T, A, B> func) {
+    return new Node<T>(name, aNode, bNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return Future.value(func.apply(aNode.emit(), bNode.emit()));
+      }
+    };
+  }
+
+  public static <T, A, B, C> Node<T> map3(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Function3<T, A, B, C> func) {
+    return new Node<T>(name, aNode, bNode, cNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return Future.value(func.apply(aNode.emit(), bNode.emit(), cNode.emit()));
+      }
+    };
+  }
+
+  public static <T, A, B, C, D> Node<T> map4(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode,
+      Function4<T, A, B, C, D> func) {
+    return new Node<T>(name, aNode, bNode, cNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return Future.value(func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit()));
+      }
+    };
+  }
+
+  public static <T, A, B> Node<T> flatMap2(
+      String name,
+      final Node<A> aNode, final Node<B> bNode, Function2<Future<T>, A, B> func) {
+    return new Node<T>(name, aNode, bNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return func.apply(aNode.emit(), bNode.emit());
+      }
+    };
+  }
+
+  public static <T, A, B, C> Node<T> flatMap3(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Function3<Future<T>, A, B, C> func) {
+    return new Node<T>(name, aNode, bNode, cNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return func.apply(aNode.emit(), bNode.emit(), cNode.emit());
+      }
+    };
+  }
+
+  public static <T, A, B, C, D> Node<T> flatMap4(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode,
+      Function4<Future<T>, A, B, C, D> func) {
+    return new Node<T>(name, aNode, bNode, cNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit());
+      }
+    };
+  }
+
+  /**
    * Maps the value of current node to a new type T by applying the provided function, but only when
    * the value is present. For null values, the function is not even run and the transformed value
    * is null. Exceptions will be convert to null.
