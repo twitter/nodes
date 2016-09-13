@@ -383,13 +383,11 @@ Node<C> cNode = xNode.orElse(yNode);  // gets xNode if xNode is a success, other
 
 ### Logging and Debug Messages
 
-Nodes provides a simple framework for collecting debug messages in the asychrounous execution of the dependency graph. There is a `DebugManager` class with a thread-local `DebugMessageBuilder` inside. For each execution of a graph, you can set a new `DebugMessageBuilder` and all debug messages will be collected over there.
+Nodes provides a simple framework for collecting debug messages in the asychrounous execution of the dependency graph. You can use the `DebugManager` class with a [flexibly-scoped thread-local](https://twitter.github.io/util/docs/#com.twitter.util.Local) `DebugMessageBuilder` inside. For each execution of a graph, you can set a new `DebugMessageBuilder` and all debug messages will be collected over there.
 
 ```java
 DebugManager.update(new DebugMessageBuilder(DebugLevel.DEBUG_DETAILED));
 ```
-
-> Make sure you call `update()` in the same thread you would call `apply()` on this node, so the thread-local setup actually works.
 
 You can choose from multiple `DebugLevels`, When you produce the debug message, only those no higher than the set level would be collected.
 
