@@ -16,7 +16,7 @@ Future<Response> processRequest(Request req)
 Your logic goes inside `processRequest()`, you may do some local computation here, call some external services, or even run some code in another thread. The logic dependencies in these code could be complicated. [Finagle](https://twitter.github.io/finagle/) provides a good paradigm for [concurrent programming with Futures](http://twitter.github.io/finagle/guide/Futures.html). The `Future` class is a greate building block, it decouples the execution logic and the thread scheduling, so the developer can focus on the logic dependencies rather than their actual execution. However, this library was written in Scala and isn't exactly Java friendly. It naturally involves a lot of callbacks and repeated function signatures. When it comes to waiting on multiple Futures, the code gets ugly very fast. Nodes is a Java library that aims to solve these problems, making the asynchronous code easier to read, to maintain and to test in Java.
 
 ## Basic Concepts
-A node is an asyncrhonous processing unit. It takes multiple asyhcrounous input nodes (dependencies), and produces a single output. It will only start executing when all inputs are ready. A node object is also a handle to its output. Like `Future<A>` in Finagle, `Node<A>` represents an asychronously computed data of type A. Actually `Node` and `Future` are mutually convertible. The tutorials below will show you how to create nodes and assemble them into a dependency graph.
+A node is an asynchronous processing unit. It takes multiple asynchronous input nodes (dependencies), and produces a single output. It will only start executing when all inputs are ready. A node object is also a handle to its output. Like `Future<A>` in Finagle, `Node<A>` represents an asynchronously computed data of type A. Actually `Node` and `Future` are mutually convertible. The tutorials below will show you how to create nodes and assemble them into a dependency graph.
 
 Another way to understand nodes is to consider them asynchronous functions, every node with input of type A, B, C and return type of X can be thought as a function with signature:
 
@@ -212,7 +212,7 @@ Node.fail(Throwable t)
 
 ### Subgraph
 
-Putting your whole graph in a single file is probably not convenient. Subgraph  provides a way to organize your graph. Subgraph is a subset of the graph (duh), its inputs/outputs consist of the union of all inputs/outputs of the nodes at the boundary, so it can have more than 1 input and more than 1 output.
+Putting your whole graph in a single file is probably not convenient. Subgraph provides a way to organize your graph. Subgraph is a subset of the graph (duh), its inputs/outputs consist of the union of all inputs/outputs of the nodes at the boundary, so it can have more than 1 input and more than 1 output.
 
 Subgraph doesn't have any effect on the execution of the nodes, it's just a way to organize nodes into a more reusable way. Below is a recommended style to implement Subgraphs.
 
