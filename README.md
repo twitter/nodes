@@ -61,7 +61,7 @@ A dependency is by default *required* (without any marking), which means throwin
 
 You need to implement the `evaluate()` method, which will only be called when all dependencies are ready, and called only once. You can get values for each of the dependencies using `getDep()` and use them in your computation. At the end, you are supposed to return a `Future` object with desired return type. If you don't have any asynchronous processing inside, you can just wrap your output with `Future.value()`. However, you can also call other asynchronous services like a remote server, or submit tasks to another thread, and pass back the `Future` object you acquired from them directly.
 
-There is always a simple way to create a multiple-dependency node inline with Java 8 lambda functions, with support up to 4 inputs. See [Map with Multiple Inputs](#map-multiple) for more details.
+There is always a simple way to create a multiple-dependency node inline with Java 8 lambda functions, with support for up to 4 inputs. See [Map with Multiple Inputs](#map-multiple) for more details.
 
 #### Instantiating the Node
 
