@@ -96,7 +96,7 @@ Node<Integer> resultNode = Node.build(
 
 #### NullableNode
 
-Normally a node shouldn't return a `null` value, an exception would be thrown if it encounters a null output. You should try to use the control flow methods (see below) to manage the execution and make `null` value unnecessary, or utilize `Optional<A>` to represent return values that can be null. However, we also provides `NullableNode` which you can extend from, they can return `null` without causing any exception. The reason we make default `Node` class null-unfriendly is to make it easy to reason what went wrong during the execution, and not to confuse an error with a non-existent value, but overall this is a matter of style. The `NullableNode` is convenient but you should use it with care.
+Normally a node shouldn't return a `null` value, an exception would be thrown if it encounters a null output. You should try to use the control flow methods (see below) to manage the execution and make `null` value unnecessary, or utilize `Optional<A>` to represent return values that can be null. However, we also provide `NullableNode` which you can extend from, they can return `null` without causing any exception. The reason we make default `Node` class null-unfriendly is to make it easy to reason what went wrong during the execution, and not to confuse an error with a non-existent value, but overall this is a matter of style. The `NullableNode` is convenient but you should use it with care.
 
 #### ServiceNode
 
