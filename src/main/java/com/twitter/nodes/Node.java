@@ -1059,7 +1059,7 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
       String name,
       Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode,
       Function4<Future<T>, A, B, C, D> func) {
-    return new Node<T>(name, aNode, bNode, cNode) {
+    return new Node<T>(name, aNode, bNode, cNode, dNode) {
       @Override
       protected Future<T> evaluate() throws Exception {
         return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit());
