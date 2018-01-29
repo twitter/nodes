@@ -355,35 +355,35 @@ public class NodeTest extends NodeTestBase {
 
   @Test
   public void testFlatMap2() throws Exception {
-      Node<Integer> first = Node.value(100);
-      Node<Integer> second = Node.value(200);
-      Node<Integer> flatMappedNode = Node.flatMap2("FlatMap2", first, second,
-              (result1, result2) -> Future.value(result1 + result2));
+    Node<Integer> first = Node.value(100);
+    Node<Integer> second = Node.value(200);
+    Node<Integer> flatMappedNode = Node.flatMap2("FlatMap2", first, second,
+            (result1, result2) -> Future.value(result1 + result2));
 
-      assertEquals(new Integer(300), resultFromNode(flatMappedNode));
+    assertEquals(new Integer(300), resultFromNode(flatMappedNode));
   }
 
   @Test
   public void testFlatMap3() throws Exception {
-      Node<Integer> first = Node.value(100);
-      Node<Integer> second = Node.value(200);
-      Node<Integer> third = Node.value(300);
-      Node<Integer> flatMappedNode = Node.flatMap3("FlatMap3", first, second, third,
-              (result1, result2, result3)->Future.value(result1 + result2 + result3));
+    Node<Integer> first = Node.value(100);
+    Node<Integer> second = Node.value(200);
+    Node<Integer> third = Node.value(300);
+    Node<Integer> flatMappedNode = Node.flatMap3("FlatMap3", first, second, third,
+            (result1, result2, result3) -> Future.value(result1 + result2 + result3));
 
-      assertEquals(new Integer(600), resultFromNode(flatMappedNode));
+    assertEquals(new Integer(600), resultFromNode(flatMappedNode));
   }
 
   @Test
   public void testFlatMap4() throws Exception {
-      Node<Integer> first = Node.value(100);
-      Node<Integer> second = Node.value(200);
-      Node<Integer> third = Node.value(300);
-      Node<Integer> fourth = Node.value(400);
-      Node<Integer> flatMappedNode = Node.flatMap4("FlatMap4", first, second, third, fourth,
-              (result1, result2, result3, result4)->Future.value(result1 + result2 + result3 + result4));
+    Node<Integer> first = Node.value(100);
+    Node<Integer> second = Node.value(200);
+    Node<Integer> third = Node.value(300);
+    Node<Integer> fourth = Node.value(400);
+    Node<Integer> flatMappedNode = Node.flatMap4("FlatMap4", first, second, third, fourth,
+            (result1, result2, result3, result4) -> Future.value(result1 + result2 + result3 + result4));
 
-      assertEquals(new Integer(1000), resultFromNode(flatMappedNode));
+    assertEquals(new Integer(1000), resultFromNode(flatMappedNode));
   }
 
   @Test
