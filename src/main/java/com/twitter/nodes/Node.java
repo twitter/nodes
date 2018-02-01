@@ -999,6 +999,26 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
     X apply(A a, B b, C c, D d);
   }
 
+  @FunctionalInterface
+  public interface Function5<X, A, B, C, D, E> {
+    X apply(A a, B b, C c, D d, E e);
+  }
+
+  @FunctionalInterface
+  public interface Function6<X, A, B, C, D, E, F> {
+    X apply(A a, B b, C c, D d, E e, F f);
+  }
+
+  @FunctionalInterface
+  public interface Function7<X, A, B, C, D, E, F, G> {
+    X apply(A a, B b, C c, D d, E e, F f, G g);
+  }
+
+  @FunctionalInterface
+  public interface Function8<X, A, B, C, D, E, F, G, H> {
+    X apply(A a, B b, C c, D d, E e, F f, G g, H h);
+  }
+
   public static <T, A, B> Node<T> map2(
       String name,
       final Node<A> aNode, final Node<B> bNode, Function2<T, A, B> func) {
@@ -1063,6 +1083,56 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
       @Override
       protected Future<T> evaluate() throws Exception {
         return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit());
+      }
+    };
+  }
+
+  public static <T, A, B, C, D, E> Node<T> flatMap5(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode, Node<E> eNode,
+      Function5<Future<T>, A, B, C, D, E> func) {
+    return new Node<T>(name, aNode, bNode, cNode, dNode, eNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit());
+      }
+    };
+  }
+
+  public static <T, A, B, C, D, E, F> Node<T> flatMap6(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode, Node<E> eNode, Node<F> fNode,
+      Function6<Future<T>, A, B, C, D, E, F> func) {
+    return new Node<T>(name, aNode, bNode, cNode, dNode, eNode, fNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit());
+      }
+    };
+  }
+
+  public static <T, A, B, C, D, E, F, G> Node<T> flatMap7(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode, Node<E> eNode, Node<F> fNode, Node<G> gNode,
+      Function7<Future<T>, A, B, C, D, E, F, G> func) {
+    return new Node<T>(name, aNode, bNode, cNode, dNode, eNode, fNode, gNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit(),
+                gNode.emit());
+      }
+    };
+  }
+
+  public static <T, A, B, C, D, E, F, G, H> Node<T> flatMap8(
+      String name,
+      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode, Node<E> eNode, Node<F> fNode, Node<G> gNode,
+      Node<H> hNode, Function8<Future<T>, A, B, C, D, E, F, G, H> func) {
+    return new Node<T>(name, aNode, bNode, cNode, dNode, eNode, fNode, gNode, hNode) {
+      @Override
+      protected Future<T> evaluate() throws Exception {
+        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit(),
+                gNode.emit(), hNode.emit());
       }
     };
   }

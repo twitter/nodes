@@ -387,6 +387,68 @@ public class NodeTest extends NodeTestBase {
   }
 
   @Test
+  public void testFlatMap5() throws Exception {
+    Node<Integer> first = Node.value(100);
+    Node<Integer> second = Node.value(200);
+    Node<Integer> third = Node.value(300);
+    Node<Integer> fourth = Node.value(400);
+    Node<Integer> fifth = Node.value(500);
+    Node<Integer> flatMappedNode = Node.flatMap5("FlatMap5", first, second, third, fourth, fifth,
+            (result1, result2, result3, result4, result5) -> Future.value(result1 + result2 + result3 + result4
+                    + result5));
+
+    assertEquals(new Integer(1500), resultFromNode(flatMappedNode));
+  }
+
+  @Test
+  public void testFlatMap6() throws Exception {
+    Node<Integer> first = Node.value(100);
+    Node<Integer> second = Node.value(200);
+    Node<Integer> third = Node.value(300);
+    Node<Integer> fourth = Node.value(400);
+    Node<Integer> fifth = Node.value(500);
+    Node<Integer> sixth = Node.value(600);
+    Node<Integer> flatMappedNode = Node.flatMap6("FlatMap6", first, second, third, fourth, fifth, sixth,
+            (result1, result2, result3, result4, result5, result6) -> Future.value(result1 + result2 + result3
+                    + result4 + result5 + result6));
+
+    assertEquals(new Integer(2100), resultFromNode(flatMappedNode));
+  }
+
+  @Test
+  public void testFlatMap7() throws Exception {
+    Node<Integer> first = Node.value(100);
+    Node<Integer> second = Node.value(200);
+    Node<Integer> third = Node.value(300);
+    Node<Integer> fourth = Node.value(400);
+    Node<Integer> fifth = Node.value(500);
+    Node<Integer> sixth = Node.value(600);
+    Node<Integer> seventh = Node.value(700);
+    Node<Integer> flatMappedNode = Node.flatMap7("FlatMap7", first, second, third, fourth, fifth, sixth, seventh,
+            (result1, result2, result3, result4, result5, result6, result7) -> Future.value(result1 + result2 + result3
+                    + result4 + result5 + result6 + result7));
+
+    assertEquals(new Integer(2800), resultFromNode(flatMappedNode));
+  }
+
+  @Test
+  public void testFlatMap8() throws Exception {
+    Node<Integer> first = Node.value(100);
+    Node<Integer> second = Node.value(200);
+    Node<Integer> third = Node.value(300);
+    Node<Integer> fourth = Node.value(400);
+    Node<Integer> fifth = Node.value(500);
+    Node<Integer> sixth = Node.value(600);
+    Node<Integer> seventh = Node.value(700);
+    Node<Integer> eighth = Node.value(800);
+    Node<Integer> flatMappedNode = Node.flatMap8("FlatMap8", first, second, third, fourth, fifth, sixth, seventh,
+            eighth, (result1, result2, result3, result4, result5, result6, result7, result8) -> Future.value(result1
+                    + result2 + result3 + result4 + result5 + result6 + result7 + result8));
+
+    assertEquals(new Integer(3600), resultFromNode(flatMappedNode));
+  }
+
+  @Test
   public void testWhen() throws Exception {
     Node<String> node = Node.value("condition was true");
     assertEquals("condition was true", resultFromNode(node.when(Node.TRUE)));
