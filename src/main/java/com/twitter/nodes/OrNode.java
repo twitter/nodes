@@ -75,11 +75,11 @@ public final class OrNode extends BooleanOperationNode {
    * Creates an eagerly evaluated disjunction where after all dependencies complete successfully,
    * the disjunction is evaluated left to right.
    */
-  public static final OrNode create(Node<Boolean>... disjunctionNodes) {
+  public static OrNode create(Node<Boolean>... disjunctionNodes) {
     return create("Or", disjunctionNodes);
   }
 
-  public static final OrNode create(String name, Node<Boolean>... disjunctionNodes) {
+  public static OrNode create(String name, Node<Boolean>... disjunctionNodes) {
     Preconditions.checkState(disjunctionNodes.length >= 2);
     return new OrNode(name, ImmutableList.copyOf(disjunctionNodes), false);
   }
@@ -88,11 +88,11 @@ public final class OrNode extends BooleanOperationNode {
    * Creates a lazily evaluated disjunction where lazily implies that both the async and boolean
    * evaluation of node dependencies occurs sequentially, left to right.
    */
-  public static final OrNode createLazy(Node<Boolean>... disjunctionNodes) {
+  public static OrNode createLazy(Node<Boolean>... disjunctionNodes) {
     return createLazy("Or-lazy", disjunctionNodes);
   }
 
-  public static final OrNode createLazy(String name, Node<Boolean>... disjunctionNodes) {
+  public static OrNode createLazy(String name, Node<Boolean>... disjunctionNodes) {
     Preconditions.checkState(disjunctionNodes.length >= 2);
     return new OrNode(ImmutableList.copyOf(disjunctionNodes), true);
   }

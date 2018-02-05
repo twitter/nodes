@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
  * A named predicate
  *
  * Use this to create static constant predicates to be used in node predicate switches.
+ * CHECKSTYLE:OFF EqualsHashCode
  */
 public abstract class NamedPredicate<A> implements Predicate<A> {
   private final String name;

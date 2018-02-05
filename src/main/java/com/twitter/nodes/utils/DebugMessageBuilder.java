@@ -156,7 +156,10 @@ public class DebugMessageBuilder {
     setIndentationLevel(0);
   }
 
-  private DebugMessageBuilder appendDebug(DebugLevel msgLevel, final String message, Object... args) {
+  private DebugMessageBuilder appendDebug(
+      DebugLevel msgLevel,
+      final String message,
+      Object... args) {
     if (!message.isEmpty()
         && (getDebugLevel() >= msgLevel.getLevel()
         || getDebugLevel() >= DebugLevel.DEBUG_DETAILED.getLevel())) {

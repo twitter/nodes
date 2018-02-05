@@ -22,7 +22,7 @@ import com.twitter.util.Future;
 /**
  * Checks if the values stored in two nodes are equal.
  */
-public class EqualsNode<T> extends Node<Boolean> {
+public final class EqualsNode<T> extends Node<Boolean> {
 
   private final Node<T> nodeA;
   private final Node<T> nodeB;

@@ -73,17 +73,18 @@ public final class AndNode extends BooleanOperationNode {
                 ? evaluate(operands.subList(1, operands.size()))
                 : FALSE_FUTURE;
           }
-        });  }
+        });
+  }
 
   /**
    * Creates an eagerly evaluated conjunction where after all dependencies complete successfully,
    * the conjunction is evaluated left to right.
    */
-  public static final AndNode create(Node<Boolean>... conjunctionNodes) {
+  public static AndNode create(Node<Boolean>... conjunctionNodes) {
     return create("AND", conjunctionNodes);
   }
 
-  public static final AndNode create(String name, Node<Boolean>... conjunctionNodes) {
+  public static AndNode create(String name, Node<Boolean>... conjunctionNodes) {
     Preconditions.checkState(conjunctionNodes.length >= 2);
     return new AndNode(name, ImmutableList.copyOf(conjunctionNodes), false);
   }
@@ -92,11 +93,11 @@ public final class AndNode extends BooleanOperationNode {
    * Creates a lazily evaluated conjunction where lazily implies that both the async and boolean
    * evaluation of node dependencies occurs sequentially, left to right.
    */
-  public static final AndNode createLazy(Node<Boolean>... conjunctionNodes) {
+  public static AndNode createLazy(Node<Boolean>... conjunctionNodes) {
     return createLazy("AND-lazy", conjunctionNodes);
   }
 
-  public static final AndNode createLazy(String name, Node<Boolean>... conjunctionNodes) {
+  public static AndNode createLazy(String name, Node<Boolean>... conjunctionNodes) {
     Preconditions.checkState(conjunctionNodes.length >= 2);
     return new AndNode(name, ImmutableList.copyOf(conjunctionNodes), true);
   }

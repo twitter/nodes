@@ -35,7 +35,8 @@ import com.twitter.util.Throwables;
  * Some utility functions related to Future handle
  */
 public final class Futures {
-  private Futures() {}
+  private Futures() {
+  }
 
   /**
    * Check if a future has completed with success

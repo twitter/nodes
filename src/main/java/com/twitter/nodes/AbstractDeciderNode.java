@@ -28,7 +28,7 @@ public abstract class AbstractDeciderNode extends Node<Boolean> {
   protected AbstractDeciderNode(String name,
                                 String featureName) {
     super(name);
-    this.featureName = Preconditions. checkNotNull(featureName);
+    this.featureName = Preconditions.checkNotNull(featureName);
   }
 
   @Override

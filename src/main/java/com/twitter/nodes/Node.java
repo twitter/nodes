@@ -61,7 +61,7 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
   // A static dependency map to remember all optional dependencies of all nodes.
   // This starts with an empty map and gradually collect optionality information for different
   // enum classes used in the nodes.
-  private static Map<Class<? extends Enum>, Set<? extends Enum>> OPTIONAL_DEP_MAP =
+  private static final Map<Class<? extends Enum>, Set<? extends Enum>> OPTIONAL_DEP_MAP =
       Maps.newConcurrentMap();
 
   public static final Node<Boolean> TRUE = Node.value(true, "trueNode");
@@ -260,42 +260,42 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
   /**
    * Get dependency node itself
    */
-  protected <T> Node<T> getNodeDep(Enum name) {
-    Preconditions.checkArgument(name != null && dependentNodesByName.containsKey(name),
-        "Cannot find node dependency for " + name);
-    return dependentNodesByName.get(name);
+  protected <T> Node<T> getNodeDep(Enum dependency) {
+    Preconditions.checkArgument(name != null && dependentNodesByName.containsKey(dependency),
+        "Cannot find node dependency for %s", dependency);
+    return dependentNodesByName.get(dependency);
   }
 
   /**
    * Get a dependent node's emitted value by its name. You can only get named dependency's value. If
    * the node is optional, it will return Optional<> type.
    */
-  protected <T> T getRawDep(Enum name) {
-    Preconditions.checkArgument(name != null && dependentNodesByName.containsKey(name),
-        "Cannot find raw node dependency value for " + name);
-    return (T) dependentNodesByName.get(name).emit();
+  protected <T> T getRawDep(Enum dependency) {
+    Preconditions.checkArgument(name != null && dependentNodesByName.containsKey(dependency),
+        "Cannot find raw node dependency value for %s", dependency);
+    return (T) dependentNodesByName.get(dependency).emit();
   }
 
   /**
    * Get a dependent node's emitted value by its name.
    */
   @Nullable
-  protected <T> T getDep(Enum name) {
-    Preconditions.checkArgument(name != null && dependentNodesByName.containsKey(name),
-        "Cannot find node dependency value for " + name);
-    return (T) this.<T>getDep(dependentNodesByName.get(name));
+  protected <T> T getDep(Enum dependency) {
+    Preconditions.checkArgument(dependency != null && dependentNodesByName.containsKey(dependency),
+        "Cannot find node dependency value for %s", dependency);
+    return (T) this.<T>getDep(dependentNodesByName.get(dependency));
   }
 
   /**
    * Get a dependent node's emitted value by its name
    *
-   * @param name Enum name of dependency
+   * @param dependency Enum name of dependency
    * @param defaultValue default value to use if dependency is missing, i.e. emitted value is null
    * @param <T> return type of dependency
    */
-  protected <T> T getDep(Enum name, T defaultValue) {
+  protected <T> T getDep(Enum dependency, T defaultValue) {
     Preconditions.checkNotNull(defaultValue, "Cannot have default value for a dependency as null");
-    T value = getDep(name);
+    T value = getDep(dependency);
     return value == null ? defaultValue : value;
   }
 
@@ -320,23 +320,23 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
     return key;
   }
 
-  public final Node setKey(String key) {
-    this.key = key;
+  public final Node setKey(String aKey) {
+    this.key = aKey;
     return this;
   }
 
-  public final Node setSinkNodes(List<Node> sinkNodes) {
+  public final Node setSinkNodes(List<Node> nodes) {
     Preconditions.checkArgument(!createdFuture.get(), "Node [%s] has been applied.", getName());
-    Preconditions.checkNotNull(sinkNodes);
-    this.sinkNodes = sinkNodes;
+    Preconditions.checkNotNull(nodes);
+    this.sinkNodes = nodes;
     return this;
   }
 
-  public final Node addSinkNodes(List<Node> sinkNodes) {
+  public final Node addSinkNodes(List<Node> nodes) {
     return setSinkNodes(
         ImmutableList.<Node>builder()
             .addAll(this.sinkNodes)
-            .addAll(sinkNodes)
+            .addAll(nodes)
             .build());
   }
 
@@ -525,30 +525,31 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
       // The node.isOptional() is mostly for backward compatibility as we may sometimes pass in
       // an optional-wrapped node using the new-style builder.
       // TODO(wangtian): remove the isOptional() check after we clean up all such cases.
-      Node dependency = isDependencyOptional(name) && !node.isOptional() ?
-          Node.optional(node) : node;
+      Node dependency = isDependencyOptional(name) && !node.isOptional()
+          ? Node.optional(node)
+          : node;
       Preconditions.checkArgument(dependentNodesByName.put(name, dependency) == null,
           "You have already added a dependent node named " + name);
       return this;
     }
 
-    public Builder<T> withDeciderSupplier(DeciderSupplier deciderSupplier) {
-      this.deciderSupplier = deciderSupplier;
+    public Builder<T> withDeciderSupplier(DeciderSupplier aDeciderSupplier) {
+      this.deciderSupplier = aDeciderSupplier;
       return this;
     }
 
-    public Builder<T> withNodeKey(String nodeKey) {
-      this.nodeKey = nodeKey;
+    public Builder<T> withNodeKey(String key) {
+      this.nodeKey = key;
       return this;
     }
 
-    public Builder<T> withSinkNodes(List<Node> sinkNodes) {
-      this.sinkNodes = sinkNodes;
+    public Builder<T> withSinkNodes(List<Node> nodes) {
+      this.sinkNodes = nodes;
       return this;
     }
 
-    public Builder<T> withSinkNodes(Node... sinkNodes) {
-      return withSinkNodes(ImmutableList.copyOf(sinkNodes));
+    public Builder<T> withSinkNodes(Node... nodes) {
+      return withSinkNodes(ImmutableList.copyOf(nodes));
     }
 
     /**
@@ -599,7 +600,7 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
 
     private final Node<T> wrappedNode;
 
-    public OptionalNodeWrapper(Node<T> node) {
+    OptionalNodeWrapper(Node<T> node) {
       super(String.format("~%s", node.getName()),
           true, ImmutableList.<Node>of(node), ImmutableList.<Node>of());
       this.wrappedNode = node;
@@ -768,27 +769,27 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
             }
           }
         }).transformedBy(
-        new FutureTransformer<Resp, Resp>() {
-          @Override
-          public Future<Resp> flatMap(Resp value) {
-            stopTimeMs = System.currentTimeMillis();
-            if (!isOptional()) {
-              logResponse(value);
-              logEnd();
-            }
-            return Future.value(value);
-          }
+            new FutureTransformer<Resp, Resp>() {
+              @Override
+              public Future<Resp> flatMap(Resp value) {
+                stopTimeMs = System.currentTimeMillis();
+                if (!isOptional()) {
+                  logResponse(value);
+                  logEnd();
+                }
+                return Future.value(value);
+              }
 
-          @Override
-          public Future<Resp> rescue(Throwable throwable) {
-            stopTimeMs = System.currentTimeMillis();
-            if (!isOptional()) {
-              logError(throwable);
-            }
-            return isOptional()
-                ? (Future<Resp>) FUTURE_ABSENT : Future.<Resp>exception(throwable);
-          }
-        });
+              @Override
+              public Future<Resp> rescue(Throwable throwable) {
+                stopTimeMs = System.currentTimeMillis();
+                if (!isOptional()) {
+                  logError(throwable);
+                }
+                return isOptional()
+                    ? (Future<Resp>) FUTURE_ABSENT : Future.exception(throwable);
+              }
+            });
 
     applySinkNodes();
 
@@ -977,8 +978,8 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
     return mapWithDeciderSupplier(null, func);
   }
 
-  public <T> Node<T> map(String name, Function<Resp, T> func) {
-    return mapWithDeciderSupplier(null, NamedFunction.create(name, func));
+  public <T> Node<T> map(String functionName, Function<Resp, T> func) {
+    return mapWithDeciderSupplier(null, NamedFunction.create(functionName, func));
   }
 
   /**
@@ -1106,33 +1107,49 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
     return new Node<T>(name, aNode, bNode, cNode, dNode, eNode, fNode) {
       @Override
       protected Future<T> evaluate() throws Exception {
-        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit());
+        return func.apply(
+            aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit());
       }
     };
   }
 
   public static <T, A, B, C, D, E, F, G> Node<T> flatMap7(
       String name,
-      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode, Node<E> eNode, Node<F> fNode, Node<G> gNode,
+      Node<A> aNode,
+      Node<B> bNode,
+      Node<C> cNode,
+      Node<D> dNode,
+      Node<E> eNode,
+      Node<F> fNode,
+      Node<G> gNode,
       Function7<Future<T>, A, B, C, D, E, F, G> func) {
     return new Node<T>(name, aNode, bNode, cNode, dNode, eNode, fNode, gNode) {
       @Override
       protected Future<T> evaluate() throws Exception {
-        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit(),
-                gNode.emit());
+        return func.apply(
+            aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit(),
+            gNode.emit());
       }
     };
   }
 
   public static <T, A, B, C, D, E, F, G, H> Node<T> flatMap8(
       String name,
-      Node<A> aNode, Node<B> bNode, Node<C> cNode, Node<D> dNode, Node<E> eNode, Node<F> fNode, Node<G> gNode,
-      Node<H> hNode, Function8<Future<T>, A, B, C, D, E, F, G, H> func) {
+      Node<A> aNode,
+      Node<B> bNode,
+      Node<C> cNode,
+      Node<D> dNode,
+      Node<E> eNode,
+      Node<F> fNode,
+      Node<G> gNode,
+      Node<H> hNode,
+      Function8<Future<T>, A, B, C, D, E, F, G, H> func) {
     return new Node<T>(name, aNode, bNode, cNode, dNode, eNode, fNode, gNode, hNode) {
       @Override
       protected Future<T> evaluate() throws Exception {
-        return func.apply(aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit(),
-                gNode.emit(), hNode.emit());
+        return func.apply(
+            aNode.emit(), bNode.emit(), cNode.emit(), dNode.emit(), eNode.emit(), fNode.emit(),
+            gNode.emit(), hNode.emit());
       }
     };
   }
@@ -1148,8 +1165,8 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
     return ifSuccessThen(this, map(func));
   }
 
-  public <T> Node<T> mapOnSuccess(String name, Function<Resp, T> func) {
-    return ifSuccessThen(this, map(name, func));
+  public <T> Node<T> mapOnSuccess(String functionName, Function<Resp, T> func) {
+    return ifSuccessThen(this, map(functionName, func));
   }
 
   public <T> Node<T> mapWithDeciderSupplier(
@@ -1158,8 +1175,8 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
   }
 
   public <T> Node<T> mapWithDeciderSupplier(
-      String name, DeciderSupplier deciderKey, Function<Resp, T> func) {
-    return mapWithDeciderSupplier(deciderKey, NamedFunction.create(name, func));
+      String functionName, DeciderSupplier deciderKey, Function<Resp, T> func) {
+    return mapWithDeciderSupplier(deciderKey, NamedFunction.create(functionName, func));
   }
 
   public <T> Node<T> flatMap(NamedFunction<Resp, Future<T>> func) {
@@ -1172,8 +1189,10 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
   }
 
   public <T> Node<T> flatMapWithDeciderSupplier(
-      String name, DeciderSupplier deciderKey, java.util.function.Function<Resp, Future<T>> func) {
-    return flatMapWithDeciderSupplier(deciderKey, NamedFunction.create(name, func));
+      String functionName,
+      DeciderSupplier deciderKey,
+      java.util.function.Function<Resp, Future<T>> func) {
+    return flatMapWithDeciderSupplier(deciderKey, NamedFunction.create(functionName, func));
   }
 
   /**
@@ -1260,8 +1279,8 @@ public abstract class Node<Resp> extends Function0<Future<Resp>> {
   /**
    * Create a predicate out of this node
    */
-  public Node<Boolean> predicate(String name, Predicate<Resp> predicate) {
-    return PredicateNode.create(this, predicate, name);
+  public Node<Boolean> predicate(String predicateName, Predicate<Resp> predicate) {
+    return PredicateNode.create(this, predicate, predicateName);
   }
 
   public Node<Boolean> predicate(NamedPredicate<Resp> predicate) {

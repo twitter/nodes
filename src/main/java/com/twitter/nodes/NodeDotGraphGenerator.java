@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
@@ -70,8 +69,8 @@ public final class NodeDotGraphGenerator {
    * Edge Info for rendering
    */
   private static class EdgeInfo {
-    boolean optional;
-    String label;  // by default this is just the dep name, but may have special name
+    private final boolean optional;
+    private final String label;  // by default this is just the dep name, but may have special name
 
     EdgeInfo(boolean optional, String label) {
       this.optional = optional;
@@ -88,14 +87,14 @@ public final class NodeDotGraphGenerator {
    * Node Info for rendering
    */
   private static class NodeInfo {
-    Node node;  // the reference to the node
-    String keyName;  // key used in the DOT graph file
-    String nodeName;  // name from node itself
-    NodeType type;
+    private Node node;  // the reference to the node
+    private String keyName;  // key used in the DOT graph file
+    private String nodeName;  // name from node itself
+    private NodeType type;
     // A map for all dependency nodes, from each dependency node's keyName to its dot information,
     // which is a pair of NodeInfo and EdgeInfo. NodeInfo is a reference to that node's data,
     // EdgeInfo has information for the connection between that dependency and this node.
-    Map<String, Pair<NodeInfo, EdgeInfo>> depInfo = Maps.newHashMap();
+    private Map<String, Pair<NodeInfo, EdgeInfo>> depInfo = Maps.newHashMap();
 
     NodeInfo(String keyName, Node node) {
       this.node = node;
@@ -160,16 +159,22 @@ public final class NodeDotGraphGenerator {
   private NodeDotGraphGenerator() { }
 
   /**
-   * Create dot for a subgraph
+   * Creates dot for a subgraph
    */
   public static String createDot(Subgraph subgraph) {
     return createDot(subgraph.getExposedNodes());
   }
 
+  /**
+   * Creates dot for a node
+   */
   public static String createDot(Node node) {
     return createDot(Collections.singletonList(node));
   }
 
+  /**
+   * Creates dot for a list of nodes
+   */
   public static String createDot(List<Node> nodes) {
     StringBuilder sb = new StringBuilder();
     sb.append("digraph G {\n");
