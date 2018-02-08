@@ -394,17 +394,21 @@ You can choose from multiple `DebugLevels`, When you produce the debug message, 
 Anywhere in your node's `evaluate()` method or other non-static methods, you can call following member methods to append a message to the current `DebugMessageBuilder`. It supports `String.format()` style formatters. A line break will be added automatically after each call.
 
 ```java
-debugSimple("current score: %d", score);
-debugDetailed("input type = %, parameters = %s", type, params);
-debugVerbose("server full response: %s", response);
-debugVerbose2("super detailed debug info: %s", stuff);
+basic("current score: %d", score);
+detailed("input type = %, parameters = %s", type, params);
+verbose("server full response: %s", response);
+verbose2("detailed debug info: %s", stuff);
+verbose3("super detailed debug info: %s", stuff);
 ```
 
 If you are not in the scope of a Node subclass, you can still append message by calling similar methods in DebugManager.
 
 ```java
-DebugManager.debugSimple(...)
-DebugManager.debugDetailed(...)
+DebugManager.basic(...)
+DebugManager.detailed(...)
+DebugManager.verbose(...)
+DebugManager.verbose2(...)
+DebugManager.verbose3(...)
 ```
 
 All these messages will be properly prefixed with the node name and timestamp. Node itself also produces some debug messages to mark the beginning and end of its execution, storing the time spent in the node, etc.
