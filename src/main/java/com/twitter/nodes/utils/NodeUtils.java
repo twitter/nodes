@@ -25,10 +25,8 @@ import scala.Tuple4;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import com.twitter.nodes.IfSuccessfulNode;
 import com.twitter.nodes.NamedFunction;
 import com.twitter.nodes.Node;
-import com.twitter.nodes.PredicateSwitchNode;
 import com.twitter.nodes.TransformNode;
 import com.twitter.util.Future;
 
@@ -47,7 +45,7 @@ public final class NodeUtils {
     return TransformNode.create(node, NodeUtils.<T>asList());
   }
 
-  private static class ToNodePair<S, T> extends Node<Pair<S, T>> {
+  private static final class ToNodePair<S, T> extends Node<Pair<S, T>> {
     private final Node<S> node1;
     private final Node<T> node2;
 
@@ -73,7 +71,7 @@ public final class NodeUtils {
         pairNode.mapOnSuccess("getSecond", Pair::getSecond));
   }
 
-  private static class ToNodeTuple3<T1, T2, T3> extends Node<Tuple3<T1, T2, T3>> {
+  private static final class ToNodeTuple3<T1, T2, T3> extends Node<Tuple3<T1, T2, T3>> {
     private final Node<T1> node1;
     private final Node<T2> node2;
     private final Node<T3> node3;
@@ -98,7 +96,7 @@ public final class NodeUtils {
     return new ToNodeTuple3<>(node1, node2, node3);
   }
 
-  private static class ToNodeTuple4<T1, T2, T3, T4> extends Node<Tuple4<T1, T2, T3, T4>> {
+  private static final class ToNodeTuple4<T1, T2, T3, T4> extends Node<Tuple4<T1, T2, T3, T4>> {
     private final Node<T1> node1;
     private final Node<T2> node2;
     private final Node<T3> node3;

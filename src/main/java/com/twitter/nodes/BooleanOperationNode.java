@@ -55,8 +55,8 @@ public abstract class BooleanOperationNode extends Node<Boolean> {
   ImmutableMap<String, Node> getInputsByName() {
     ImmutableMap.Builder<String, Node> builder = ImmutableMap.builder();
     int index = 0;
-    for (Node<Boolean> operands : getOperands()) {
-      builder.put("OP" + index, operands);
+    for (Node<Boolean> nodeOperands : getOperands()) {
+      builder.put("OP" + index, nodeOperands);
       ++index;
     }
     return builder.build();

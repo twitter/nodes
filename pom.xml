@@ -34,8 +34,8 @@
   <build>
     <directory>out</directory>
     <outputDirectory>build</outputDirectory>
-    <sourceDirectory>src/main</sourceDirectory>
-    <testSourceDirectory>src/test</testSourceDirectory>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -163,15 +163,36 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <configuration>
+              <configLocation>checkstyle/coding_style.xml</configLocation>
+              <suppressionsLocation>checkstyle/suppressions.xml</suppressionsLocation>
+              <encoding>UTF-8</encoding>
+              <consoleOutput>true</consoleOutput>
+              <failsOnError>true</failsOnError>
+              <linkXRef>false</linkXRef>
+            </configuration>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
-    <encoding>UTF-8</encoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
   <distributionManagement>
@@ -265,7 +286,7 @@
       <artifactId>guava</artifactId>
       <version>19.0</version>
     </dependency>
-    
+
     <dependency>
       <groupId>com.twitter</groupId>
       <artifactId>util-core_2.10</artifactId>

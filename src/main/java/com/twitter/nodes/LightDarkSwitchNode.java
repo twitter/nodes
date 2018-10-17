@@ -26,7 +26,7 @@ import com.twitter.util.Future;
  * Different from PredicateSwitchNode, this ALWAYS calls apply to both true and false nodes (false
  * nodes could be null though), and the condition only controls which result to return.
  */
-public class LightDarkSwitchNode<T> extends Node<T> {
+public final class LightDarkSwitchNode<T> extends Node<T> {
   private Node<Boolean> shouldDarkReadNode;
   private Node<T> darkNode;
   private Node<T> lightNode;
@@ -48,10 +48,10 @@ public class LightDarkSwitchNode<T> extends Node<T> {
   @Override
   protected Future<T> evaluate() throws Exception {
     boolean shouldDarkRead = shouldDarkReadNode.emit();
-    Future<T> darkResultFuture = darkNode != null ?
-        darkNode.apply() : Future.<T>value(null);
-    Future<T> lightResultFuture = lightNode != null ?
-        lightNode.apply() : Future.<T>value(null);
+    Future<T> darkResultFuture = darkNode != null
+        ? darkNode.apply() : Future.<T>value(null);
+    Future<T> lightResultFuture = lightNode != null
+        ? lightNode.apply() : Future.<T>value(null);
     return shouldDarkRead ? darkResultFuture : lightResultFuture;
   }
 

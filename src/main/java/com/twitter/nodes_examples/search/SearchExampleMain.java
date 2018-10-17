@@ -31,8 +31,11 @@ import com.twitter.util.Future;
 /**
  * An example search engine server implemented with Nodes.
  */
-public class SearchExampleMain {
+public final class SearchExampleMain {
   private static final Logger LOG = Logger.getLogger(SearchExampleMain.class.getSimpleName());
+
+  private SearchExampleMain() {
+  }
 
   public static void main(String[] args) {
     // Enable debugging, this is both for the collection of debug info and also for enabling the
