@@ -308,7 +308,7 @@ You can use these mappers/flatMappers to implement simple nodes with no optional
 
 #### Bolean operations
 
-We provide some convenient methods for manipulating nodes wiht boolean values:
+We provide some convenient methods for manipulating nodes with boolean values:
 
 ```java
 // Boolean nodes
