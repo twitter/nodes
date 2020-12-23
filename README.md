@@ -471,7 +471,7 @@ Files.write(mygraph.toDotGraph().getBytes(), new File("graph.dot"));
 
 You can render the generated file using Graphviz ([download here](http://www.graphviz.org/Download_macos.php), you may also need [X11](https://www.xquartz.org/)). Check out the [DOT language reference](http://www.graphviz.org/Documentation.php) if you want to understand the generated file, or read [NodeDotGraphGenerator.java](src/main/java/com/twitter/nodes/NodeDotGraphGenerator.java). A rendered graph looks like this:
 
-![DOT dependency diagram](src/main/java/com/twitter/nodes_examples/search/graph.png "Rendered Depependency Graph from example code")
+![DOT dependency diagram](https://pointillism.io/twitter/nodes/master/src/main/java/com/twitter/nodes_examples/search/graph.dot.png "Rendered Depependency Graph from example code")
 
 The type of the node is indicated by its shape, while the optionality of dependencies are represented by the edges connecting them.
 
